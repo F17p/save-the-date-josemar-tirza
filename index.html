@@ -83,7 +83,14 @@
   <p id="msg"></p>
 </div>
 
+<!-- 🔥 SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
+const supabaseUrl = "COLOCA_AQUI_O_URL_DO_SUPABASE";
+const supabaseKey = "COLOCA_AQUI_A_ANON_KEY";
+const client = supabase.createClient(supabaseUrl, supabaseKey);
+
 let temParceiro = "Não";
 
 function next(step) {
@@ -101,21 +108,28 @@ async function enviar(resposta) {
   let telefone = document.getElementById('telefone').value;
   let nomeParceiro = document.getElementById('nomeParceiro').value;
 
+  // 🔥 GUARDAR NO SUPABASE
+  const { error } = await client.from('respostas').insert([
+    {
+      nome: nome,
+      telefone: telefone,
+      temParceiro: temParceiro,
+      nomeParceiro: nomeParceiro,
+      resposta: resposta,
+      dataResposta: new Date()
+    }
+  ]);
+
+  if (error) {
+    console.log("Erro ao salvar:", error);
+  }
+
   document.getElementById('msg').innerText =
     resposta === "Aceitou"
       ? "A sua presença foi registada com sucesso!"
       : "Registámos a sua resposta.";
 
   next(4);
-
-  console.log({
-    nome,
-    telefone,
-    temParceiro,
-    nomeParceiro,
-    resposta,
-    dataResposta: new Date()
-  });
 }
 </script>
 
