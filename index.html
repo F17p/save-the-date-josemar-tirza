@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <title>Save the Date</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f5f5f5;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .box {
+      background: white;
+      padding: 20px;
+      margin-top: 50px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    button {
+      padding: 10px;
+      margin-top: 10px;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn {
+      background: black;
+      color: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box" id="step1">
+  <h2>SAVE THE DATE</h2>
+  <p>Queridos amigos e familiares...</p>
+  <button class="btn" onclick="next(2)">Continuar</button>
+</div>
+
+<div class="box hidden" id="step2">
+  <h3>Dados pessoais</h3>
+  <input id="nome" placeholder="Nome Completo">
+  <input id="telefone" placeholder="Telefone">
+
+  <p>Vai com parceiro(a)?</p>
+  <button onclick="parceiro(true)">Sim</button>
+  <button onclick="parceiro(false)">Não</button>
+
+  <div id="parceiroBox" class="hidden">
+    <input id="nomeParceiro" placeholder="Nome do parceiro(a)">
+  </div>
+
+  <button class="btn" onclick="next(3)">Continuar</button>
+</div>
+
+<div class="box hidden" id="step3">
+  <h3>Poderá participar?</h3>
+  <button onclick="enviar('Aceitou')">Aceitar</button>
+  <button onclick="enviar('Recusou')">Recusar</button>
+</div>
+
+<div class="box hidden" id="step4">
+  <h2>Obrigado!</h2>
+  <p id="msg"></p>
+</div>
+
+<script>
+let temParceiro = "Não";
+
+function next(step) {
+  document.querySelectorAll('.box').forEach(b => b.classList.add('hidden'));
+  document.getElementById('step' + step).classList.remove('hidden');
+}
+
+function parceiro(valor) {
+  temParceiro = valor ? "Sim" : "Não";
+  document.getElementById('parceiroBox').classList.toggle('hidden', !valor);
+}
+
+async function enviar(resposta) {
+  let nome = document.getElementById('nome').value;
+  let telefone = document.getElementById('telefone').value;
+  let nomeParceiro = document.getElementById('nomeParceiro').value;
+
+  document.getElementById('msg').innerText =
+    resposta === "Aceitou"
+      ? "A sua presença foi registada com sucesso!"
+      : "Registámos a sua resposta.";
+
+  next(4);
+
+  console.log({
+    nome,
+    telefone,
+    temParceiro,
+    nomeParceiro,
+    resposta,
+    dataResposta: new Date()
+  });
+}
+</script>
+
+</body>
+</html>
