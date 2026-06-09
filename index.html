@@ -103,31 +103,36 @@ function parceiro(valor) {
   document.getElementById('parceiroBox').classList.toggle('hidden', !valor);
 }
 
-async function enviar(resposta) {
-  let nome = document.getElementById('nome').value;
-  let telefone = document.getElementById('telefone').value;
-  let nomeParceiro = document.getElementById('nomeParceiro').value;
+ async function enviar(resposta) {
+  let nome = document.getElementById('nome').value.trim();
+  let telefone = document.getElementById('telefone').value.trim();
+  let nomeParceiro = document.getElementById('nomeParceiro').value.trim();
 
-  // 🔥 GUARDAR NO SUPABASE
+  if (!nome || !telefone) {
+    alert("Por favor preencha o nome e o telefone.");
+    return;
+  }
+
   const { error } = await client.from('respostas').insert([
     {
-      nome: nome,
-      telefone: telefone,
-      temParceiro: temParceiro,
-      nomeParceiro: nomeParceiro,
-      resposta: resposta,
-      dataResposta: new Date()
+      nome,
+      telefone,
+      temParceiro,
+      nomeParceiro,
+      resposta
     }
   ]);
 
   if (error) {
-    console.log("Erro ao salvar:", error);
+    alert("Erro ao guardar resposta.");
+    console.error(error);
+    return;
   }
 
   document.getElementById('msg').innerText =
     resposta === "Aceitou"
-      ? "A sua presença foi registada com sucesso!"
-      : "Registámos a sua resposta.";
+      ? "A sua intenção de participar foi registada com sucesso."
+      : "Registámos que não poderá participar desta celebração.";
 
   next(4);
 }
