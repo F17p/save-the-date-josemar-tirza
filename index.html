@@ -92,6 +92,7 @@ const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
 let temParceiro = "Não";
+let respostaFinal = "";
 
 function next(step) {
   document.querySelectorAll('.box').forEach(b => b.classList.add('hidden'));
@@ -103,35 +104,39 @@ function parceiro(valor) {
   document.getElementById('parceiroBox').classList.toggle('hidden', !valor);
 }
 
-  async function enviarResposta() {
-  const nome = document.getElementById('nome').value;
-  const confirmacao = document.getElementById('confirmacao').value;
-
-  const { error } = await client
-    .from('Respostas')
-    .insert([
-      {
-        nome: nome,
-        confirmacao: confirmacao
-      }
-    ]);
-
-  if (error) {
-    alert("Erro ao enviar: " + error.message);
-    console.log(error);
-  } else {
-    alert("Resposta enviada com sucesso!");
-  }
-}
+function enviar(resposta) {
+  respostaFinal = resposta;
 
   document.getElementById('msg').innerText =
     resposta === "Aceitou"
       ? "A sua intenção de participar foi registada com sucesso."
       : "Registámos que não poderá participar desta celebração.";
 
+  salvarNoSupabase();
+
   next(4);
 }
-</script>
 
-</body>
-</html>
+async function salvarNoSupabase() {
+  const nome = document.getElementById('nome').value;
+  const telefone = document.getElementById('telefone').value;
+  const nomeParceiro = document.getElementById('nomeParceiro').value || "";
+
+  const { error } = await client
+    .from('Respostas')
+    .insert([
+      {
+        nome: nome,
+        telefone: telefone,
+        parceiro: temParceiro,
+        nome_parceiro: nomeParceiro,
+        confirmacao: respostaFinal
+      }
+    ]);
+
+  if (error) {
+    alert("Erro ao enviar: " + error.message);
+    console.log(error);
+  }
+}
+</script>
