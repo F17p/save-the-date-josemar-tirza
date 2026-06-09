@@ -103,30 +103,25 @@ function parceiro(valor) {
   document.getElementById('parceiroBox').classList.toggle('hidden', !valor);
 }
 
- async function enviar(resposta) {
-  let nome = document.getElementById('nome').value.trim();
-  let telefone = document.getElementById('telefone').value.trim();
-  let nomeParceiro = document.getElementById('nomeParceiro').value.trim();
+  async function enviarResposta() {
+  const nome = document.getElementById('nome').value;
+  const confirmacao = document.getElementById('confirmacao').value;
 
-  if (!nome || !telefone) {
-    alert("Por favor preencha o nome e o telefone.");
-    return;
-  }
-
-  const { error } = await client.from('Respostas').insert([
-    {
-      nome,
-      telefone,
-      temParceiro,
-      nomeParceiro,
-      resposta
-    }
-  ]);
+  const { error } = await client
+    .from('Respostas')
+    .insert([
+      {
+        nome: nome,
+        confirmacao: confirmacao
+      }
+    ]);
 
   if (error) {
-  alert(error.message);
-  console.error(error);
-  return;
+    alert("Erro ao enviar: " + error.message);
+    console.log(error);
+  } else {
+    alert("Resposta enviada com sucesso!");
+  }
 }
 
   document.getElementById('msg').innerText =
