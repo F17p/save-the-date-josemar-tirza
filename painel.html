@@ -110,6 +110,10 @@ th{
   <button class="logout-btn" onclick="logout()">
   Terminar Sessão
   </button>
+
+  <div class="box">
+  <canvas id="grafico"></canvas>
+  </div>
   
 </div>
 
@@ -136,6 +140,8 @@ th{
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
@@ -185,9 +191,26 @@ function atualizarEstatisticas(dados){
 
   });
 
+  function desenharGrafico(aceitaram, recusaram){
+
+  const ctx = document.getElementById('grafico');
+
+  new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Aceitaram', 'Recusaram'],
+      datasets: [{
+        data: [aceitaram, recusaram]
+      }]
+    }
+  });
+
+  }
+
   document.getElementById("total").innerText = total;
   document.getElementById("aceitaram").innerText = aceitaram;
   document.getElementById("recusaram").innerText = recusaram;
+  desenharGrafico(aceitaram, recusaram);
 }
 
 // 📥 CARREGAR DADOS
