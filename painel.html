@@ -119,6 +119,23 @@ th{
 
 <div class="box">
 
+<input
+  type="text"
+  id="pesquisa"
+  placeholder="🔍 Pesquisar convidado..."
+  onkeyup="filtrarTabela()"
+  style="
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border:1px solid #ddd;
+    border-radius:8px;
+    box-sizing:border-box;
+  "
+>
+
+<table>
+
 <table>
 
 <thead>
@@ -260,6 +277,29 @@ setInterval(() => {
   carregar();
 }, 10000);
 
+  function filtrarTabela() {
+
+  let filtro = document
+    .getElementById("pesquisa")
+    .value
+    .toLowerCase();
+
+  let linhas = document.querySelectorAll("#lista tr");
+
+  linhas.forEach(linha => {
+
+    let texto = linha.innerText.toLowerCase();
+
+    if(texto.includes(filtro)){
+      linha.style.display = "";
+    } else {
+      linha.style.display = "none";
+    }
+
+  });
+
+  }
+  
 // 🚀 primeira carga
 carregar();
 </script>
