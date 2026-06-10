@@ -159,12 +159,30 @@ function atualizarEstatisticas(dados){
 
   dados.forEach(item => {
 
-    let resposta = (item.confirmacao || "").toLowerCase().trim();
+    let v = (item.confirmacao ?? "")
+      .toString()
+      .toLowerCase()
+      .trim();
 
-    if(resposta.includes("aceit")){
+    // ✅ ACEITARAM (qualquer forma possível)
+    if(
+      v.includes("aceit") ||
+      v.includes("sim") ||
+      v.includes("confirm") ||
+      v === "yes" ||
+      v === "true"
+    ){
       aceitaram++;
-    } 
-    else if(resposta.includes("recus")){
+    }
+
+    // ❌ RECUSARAM (qualquer forma possível)
+    else if(
+      v.includes("recus") ||
+      v.includes("nao") ||
+      v.includes("não") ||
+      v === "no" ||
+      v === "false"
+    ){
       recusaram++;
     }
 
