@@ -199,6 +199,8 @@ async function carregar() {
  const { data, error } = await client
    .from('Respostas')
    .select('*');
+  
+  console.log(data);
 
  if(error){
    alert(error.message);
