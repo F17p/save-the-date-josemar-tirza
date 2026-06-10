@@ -206,7 +206,10 @@ async function carregar() {
   localStorage.removeItem("adminLogado");
   window.location.href = "admin.html";
   }
-  
+
+  setInterval(() => {
+  carregar();
+}, 10000); // 10 segundos
 carregar();
 </script>
 
