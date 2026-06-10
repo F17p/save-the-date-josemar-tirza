@@ -110,6 +110,26 @@ z-index:9999;">
 
 <input id="pesquisa" placeholder="Pesquisar..." onkeyup="filtrarTabela()" style="width:100%;padding:10px;margin-bottom:10px;">
 
+<div style="margin-bottom:20px;">
+  <button onclick="mostrarTab('respostas')">Respostas</button>
+  <button onclick="mostrarTab('admins')">Admins</button>
+  <button onclick="mostrarTab('pendentes')">Pendentes</button>
+</div>
+
+  <div id="respostasTab">
+  <!-- tua tabela atual fica aqui dentro -->
+</div>
+
+<div id="adminsTab" style="display:none;">
+  <h3>Admins aprovados</h3>
+  <div id="listaAdmins"></div>
+</div>
+
+<div id="pendentesTab" style="display:none;">
+  <h3>Pedidos pendentes</h3>
+  <div id="listaPendentes"></div>
+</div>
+  
 <table>
 <thead>
 <tr>
@@ -171,6 +191,15 @@ function atualizarEstatisticas(dados){
       aceitaram++;
     } else {
       recusaram++;
+    }
+
+    function mostrarTab(tab){
+
+  document.getElementById("respostasTab").style.display = "none";
+  document.getElementById("adminsTab").style.display = "none";
+  document.getElementById("pendentesTab").style.display = "none";
+
+  document.getElementById(tab + "Tab").style.display = "block";
     }
   });
 
@@ -245,7 +274,68 @@ function filtrarTabela(){
   });
 }
 
+  async function carregarAdmins(){
+
+  const { data } = await client
+    .from("admin_users")
+    .select("*")
+    .eq("status","approved");
+
+  let html = "";
+
+  data.forEach(a=>{
+    html += `<p>✔ ${a.email}</p>`;
+  });
+
+  document.getElementById("listaAdmins").innerHTML = html;
+  }
+
+  async function carregarPendentes(){
+
+  const { data } = await client
+    .from("admin_users")
+    .select("*")
+    .eq("status","pending");
+
+  let html = "";
+
+  data.forEach(p=>{
+    html += `
+      <div style="margin:10px;padding:10px;border:1px solid #ccc;">
+        ${p.email}
+
+        <button onclick="aprovarAdmin('${p.id}')">Aprovar</button>
+        <button onclick="rejeitarAdmin('${p.id}')">Rejeitar</button>
+      </div>
+    `;
+  });
+
+  document.getElementById("listaPendentes").innerHTML = html;
+  }
+
+  async function aprovarAdmin(id){
+  await client
+    .from("admin_users")
+    .update({ status:"approved" })
+    .eq("id", id);
+
+  carregarAdmins();
+  carregarPendentes();
+}
+
+async function rejeitarAdmin(id){
+  await client
+    .from("admin_users")
+    .delete()
+    .eq("id", id);
+
+  carregarPendentes();
+}
+
 carregar();
+
+  carregarAdmins();
+carregarPendentes();
 </script>
 
 </body>
