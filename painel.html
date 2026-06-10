@@ -41,6 +41,8 @@ th{
 <div class="box">
   <h2>Painel Administrativo</h2>
 
+  <button onclick="logout()">Terminar Sessão</button>
+  
   <p>Total de respostas: <span id="total">0</span></p>
 </div>
 
@@ -111,6 +113,11 @@ async function carregar() {
  document.getElementById('lista').innerHTML = html;
 }
 
+  function logout() {
+  localStorage.removeItem("adminLogado");
+  window.location.href = "admin.html";
+  }
+  
 carregar();
 </script>
 
