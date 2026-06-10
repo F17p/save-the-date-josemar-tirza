@@ -75,6 +75,7 @@ const client = supabase.createClient(
   supabaseKey
 );
   
+// 🔒 Proteção do painel
 if(localStorage.getItem("adminLogado") !== "true"){
    window.location.href = "admin.html";
 }
