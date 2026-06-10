@@ -85,6 +85,20 @@ th{
 </head>
 <body>
 
+  <div id="notificacao" style="
+display:none;
+position:fixed;
+top:80px;
+right:20px;
+background:black;
+color:white;
+padding:15px;
+border-radius:8px;
+z-index:9999;
+">
+🔔 Nova resposta recebida!
+  </div>
+
   <div class="top-bar">
   <h2>Painel Administrativo</h2>
   <p>Última atualização: hoje</p>
@@ -224,6 +238,19 @@ function atualizarEstatisticas(dados){
 
   }
 
+  function mostrarNotificacao(){
+
+  const aviso =
+    document.getElementById("notificacao");
+
+  aviso.style.display = "block";
+
+  setTimeout(() => {
+    aviso.style.display = "none";
+  }, 4000);
+
+  }
+
   document.getElementById("total").innerText = total;
   document.getElementById("aceitaram").innerText = aceitaram;
   document.getElementById("recusaram").innerText = recusaram;
@@ -273,9 +300,24 @@ function logout() {
 }
 
 // 🔄 auto refresh
-setInterval(() => {
+client
+  .channel('respostas-realtime')
+  .on(
+    'postgres_changes',
+    {
+      event: '*',
+      schema: 'public',
+      table: 'Respostas'
+    },
+    () => {
+
   carregar();
-}, 10000);
+
+  mostrarNotificacao();
+
+    }
+  )
+  .subscribe();
 
   function filtrarTabela() {
 
