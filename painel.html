@@ -56,6 +56,24 @@ th{
   padding:15px;
   border-radius:8px;
 }
+
+/* 🔥 NOVO: STATS */
+.stats{
+  display:flex;
+  gap:15px;
+  margin:20px 0;
+  flex-wrap:wrap;
+}
+
+.card{
+  flex:1;
+  min-width:120px;
+  background:#111;
+  color:white;
+  padding:15px;
+  border-radius:10px;
+  text-align:center;
+}
 </style>
 </head>
 
@@ -66,6 +84,24 @@ th{
 <button class="logout-btn" onclick="logout()">Terminar Sessão</button>
 
 <h2>Painel Administrativo</h2>
+
+<!-- 🔥 NOVO: STATS -->
+<div class="stats">
+  <div class="card">
+    <h4>Total</h4>
+    <p id="total">0</p>
+  </div>
+
+  <div class="card">
+    <h4>Aceitaram</h4>
+    <p id="aceitaram">0</p>
+  </div>
+
+  <div class="card">
+    <h4>Recusaram</h4>
+    <p id="recusaram">0</p>
+  </div>
+</div>
 
 <div style="margin-bottom:20px;">
   <button onclick="mostrarTab('respostas')">Respostas</button>
@@ -115,6 +151,7 @@ if(localStorage.getItem("adminLogado") !== "true"){
   window.location.href = "admin.html";
 }
 
+/* ---------------- TABS ---------------- */
 function mostrarTab(tab){
   document.getElementById("respostasTab").style.display = "none";
   document.getElementById("adminsTab").style.display = "none";
@@ -123,6 +160,7 @@ function mostrarTab(tab){
   document.getElementById(tab + "Tab").style.display = "block";
 }
 
+/* ---------------- NOTIFICAÇÃO ---------------- */
 function mostrarNotificacao(){
   const aviso = document.getElementById("notificacao");
   aviso.style.display = "block";
@@ -134,10 +172,34 @@ function mostrarNotificacao(){
   setTimeout(()=> aviso.style.display="none", 3000);
 }
 
-/* ---------------- RESPOSTAS ---------------- */
+/* ---------------- STATS (🔥 NOVO) ---------------- */
+function atualizarStats(data){
+  let total = data.length;
+  let aceitaram = 0;
+  let recusaram = 0;
 
+  data.forEach(item=>{
+    let v = (item.confirmacao ?? "").toLowerCase();
+
+    if(v.includes("aceit") || v==="sim" || v==="true"){
+      aceitaram++;
+    } else {
+      recusaram++;
+    }
+  });
+
+  document.getElementById("total").innerText = total;
+  document.getElementById("aceitaram").innerText = aceitaram;
+  document.getElementById("recusaram").innerText = recusaram;
+}
+
+/* ---------------- RESPOSTAS ---------------- */
 async function carregar(){
   const { data } = await client.from("Respostas").select("*");
+
+  if(!data) return;
+
+  atualizarStats(data); // 🔥 NOVO
 
   let html = "";
 
@@ -156,7 +218,6 @@ async function carregar(){
 }
 
 /* ---------------- ADMINS ---------------- */
-
 async function carregarAdmins(){
   const { data } = await client
     .from("admin_users")
@@ -173,7 +234,6 @@ async function carregarAdmins(){
 }
 
 /* ---------------- PENDENTES ---------------- */
-
 async function carregarPendentes(){
   const { data } = await client
     .from("admin_users")
@@ -196,7 +256,6 @@ async function carregarPendentes(){
 }
 
 /* ---------------- AÇÕES ---------------- */
-
 async function aprovarAdmin(id){
   await client.from("admin_users").update({status:"approved"}).eq("id",id);
   carregarAdmins();
@@ -209,7 +268,6 @@ async function rejeitarAdmin(id){
 }
 
 /* ---------------- SEARCH ---------------- */
-
 function filtrarTabela(){
   let f = document.getElementById("pesquisa").value.toLowerCase();
   document.querySelectorAll("#lista tr").forEach(tr=>{
@@ -218,7 +276,6 @@ function filtrarTabela(){
 }
 
 /* ---------------- REALTIME ---------------- */
-
 client.channel("respostas")
 .on("postgres_changes",
 {
@@ -233,11 +290,9 @@ client.channel("respostas")
 .subscribe();
 
 /* ---------------- INIT ---------------- */
-
 carregar();
 carregarAdmins();
 carregarPendentes();
-
 </script>
 
 </body>
