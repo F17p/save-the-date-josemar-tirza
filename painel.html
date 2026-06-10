@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Painel Admin</title>
+
+<style>
+body{
+  font-family:Arial;
+  background:#f5f5f5;
+  padding:20px;
+}
+
+.box{
+  background:white;
+  padding:20px;
+  border-radius:10px;
+  margin-bottom:20px;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+th,td{
+  border:1px solid #ddd;
+  padding:10px;
+  text-align:left;
+}
+
+th{
+  background:black;
+  color:white;
+}
+</style>
+</head>
+<body>
+
+<div class="box">
+  <h2>Painel Administrativo</h2>
+
+  <p>Total de respostas: <span id="total">0</span></p>
+</div>
+
+<div class="box">
+
+<table>
+
+<thead>
+<tr>
+<th>Nome</th>
+<th>Telefone</th>
+<th>Parceiro</th>
+<th>Confirmação</th>
+</tr>
+</thead>
+
+<tbody id="lista">
+</tbody>
+
+</table>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const supabaseUrl = "A_TUA_URL";
+const supabaseKey = "A_TUA_ANON_KEY";
+
+const client = supabase.createClient(
+  supabaseUrl,
+  supabaseKey
+);
+
+async function carregar() {
+
+ const { data, error } = await client
+   .from('Respostas')
+   .select('*');
+
+ if(error){
+   alert(error.message);
+   return;
+ }
+
+ document.getElementById('total').innerText = data.length;
+
+ let html = '';
+
+ data.forEach(item => {
+
+   html += `
+   <tr>
+     <td>${item.nome || ''}</td>
+     <td>${item.telefone || ''}</td>
+     <td>${item.temParceiro || ''}</td>
+     <td>${item.confirmacao || ''}</td>
+   </tr>
+   `;
+
+ });
+
+ document.getElementById('lista').innerHTML = html;
+}
+
+carregar();
+</script>
+
+</body>
+</html>
