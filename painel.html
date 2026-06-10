@@ -57,7 +57,6 @@ th{
   border-radius:8px;
 }
 
-/* 🔥 NOVO: STATS */
 .stats{
   display:flex;
   gap:15px;
@@ -85,7 +84,6 @@ th{
 
 <h2>Painel Administrativo</h2>
 
-<!-- 🔥 NOVO: STATS -->
 <div class="stats">
   <div class="card">
     <h4>Total</h4>
@@ -105,7 +103,9 @@ th{
 
 <div style="margin-bottom:20px;">
   <button onclick="mostrarTab('respostas')">Respostas</button>
-  <button onclick="mostrarTab('admins')">Admins</button>
+
+  <button onclick="mostrarTab('admins')" id="btnAdmins">Admins</button>
+
   <button onclick="mostrarTab('pendentes')">Pendentes</button>
 </div>
 
@@ -147,12 +147,27 @@ const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
+/* 🔐 LOGIN */
 if(localStorage.getItem("adminLogado") !== "true"){
   window.location.href = "admin.html";
 }
 
+/* 🔐 ROLE SYSTEM */
+const currentRole = localStorage.getItem("adminRole");
+
+/* 🔥 esconder botão se não for super admin */
+if(currentRole !== "super_admin"){
+  document.getElementById("btnAdmins").style.display = "none";
+}
+
 /* ---------------- TABS ---------------- */
 function mostrarTab(tab){
+
+  if(tab === "admins" && currentRole !== "super_admin"){
+    alert("Sem permissão");
+    return;
+  }
+
   document.getElementById("respostasTab").style.display = "none";
   document.getElementById("adminsTab").style.display = "none";
   document.getElementById("pendentesTab").style.display = "none";
@@ -172,7 +187,7 @@ function mostrarNotificacao(){
   setTimeout(()=> aviso.style.display="none", 3000);
 }
 
-/* ---------------- STATS (🔥 NOVO) ---------------- */
+/* ---------------- STATS ---------------- */
 function atualizarStats(data){
   let total = data.length;
   let aceitaram = 0;
@@ -199,7 +214,7 @@ async function carregar(){
 
   if(!data) return;
 
-  atualizarStats(data); // 🔥 NOVO
+  atualizarStats(data);
 
   let html = "";
 
@@ -255,15 +270,33 @@ async function carregarPendentes(){
   document.getElementById("listaPendentes").innerHTML = html;
 }
 
-/* ---------------- AÇÕES ---------------- */
+/* ---------------- PROTEÇÃO ---------------- */
 async function aprovarAdmin(id){
-  await client.from("admin_users").update({status:"approved"}).eq("id",id);
+
+  if(currentRole !== "super_admin"){
+    alert("Sem permissão");
+    return;
+  }
+
+  await client.from("admin_users")
+    .update({status:"approved"})
+    .eq("id",id);
+
   carregarAdmins();
   carregarPendentes();
 }
 
 async function rejeitarAdmin(id){
-  await client.from("admin_users").delete().eq("id",id);
+
+  if(currentRole !== "super_admin"){
+    alert("Sem permissão");
+    return;
+  }
+
+  await client.from("admin_users")
+    .delete()
+    .eq("id",id);
+
   carregarPendentes();
 }
 
@@ -293,6 +326,7 @@ client.channel("respostas")
 carregar();
 carregarAdmins();
 carregarPendentes();
+
 </script>
 
 </body>
