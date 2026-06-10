@@ -24,10 +24,10 @@ body{
   top: 20px;
   right: 20px;
   padding: 10px 15px;
-  border: none;
   border-radius: 5px;
   background: black;
   color: white;
+  border:none;
   cursor: pointer;
 }
 
@@ -39,7 +39,6 @@ table{
 th,td{
   border:1px solid #ddd;
   padding:10px;
-  text-align:left;
 }
 
 th{
@@ -47,68 +46,26 @@ th{
   color:white;
 }
 
-.top-bar{
-  margin-bottom: 20px;
-}
-
-.stats-container{
-  display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
-.card{
-  flex: 1;
-  min-width: 150px;
-  background: #111;
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-}
-
-.card p{
-  font-size: 28px;
-  margin: 0;
+#notificacao{
+  display:none;
+  position:fixed;
+  top:80px;
+  right:20px;
+  background:black;
+  color:white;
+  padding:15px;
+  border-radius:8px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="notificacao" style="
-display:none;
-position:fixed;
-top:80px;
-right:20px;
-background:black;
-color:white;
-padding:15px;
-border-radius:8px;
-z-index:9999;">
-🔔 Nova resposta recebida!
-</div>
-
-<div class="top-bar">
-<h2>Painel Administrativo</h2>
-</div>
-
-<div class="stats-container">
-  <div class="card"><p id="total">0</p><h3>Total</h3></div>
-  <div class="card"><p id="aceitaram">0</p><h3>Aceitaram</h3></div>
-  <div class="card"><p id="recusaram">0</p><h3>Recusaram</h3></div>
-</div>
+<div id="notificacao">🔔 Nova resposta recebida!</div>
 
 <button class="logout-btn" onclick="logout()">Terminar Sessão</button>
 
-<div class="box">
-<canvas id="grafico"></canvas>
-</div>
-
-<div class="box">
-
-<input id="pesquisa" placeholder="Pesquisar..." onkeyup="filtrarTabela()" style="width:100%;padding:10px;margin-bottom:10px;">
+<h2>Painel Administrativo</h2>
 
 <div style="margin-bottom:20px;">
   <button onclick="mostrarTab('respostas')">Respostas</button>
@@ -116,56 +73,54 @@ z-index:9999;">
   <button onclick="mostrarTab('pendentes')">Pendentes</button>
 </div>
 
-  <div id="respostasTab">
-  <!-- tua tabela atual fica aqui dentro -->
+<!-- RESPOSTAS -->
+<div id="respostasTab">
+  <input id="pesquisa" placeholder="Pesquisar..." onkeyup="filtrarTabela()" style="width:100%;padding:10px;margin-bottom:10px;">
+
+  <table>
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Telefone</th>
+        <th>Parceiro</th>
+        <th>Confirmação</th>
+      </tr>
+    </thead>
+    <tbody id="lista"></tbody>
+  </table>
 </div>
 
+<!-- ADMINS -->
 <div id="adminsTab" style="display:none;">
   <h3>Admins aprovados</h3>
   <div id="listaAdmins"></div>
 </div>
 
+<!-- PENDENTES -->
 <div id="pendentesTab" style="display:none;">
   <h3>Pedidos pendentes</h3>
   <div id="listaPendentes"></div>
 </div>
-  
-<table>
-<thead>
-<tr>
-<th>Nome</th>
-<th>Telefone</th>
-<th>Parceiro</th>
-<th>Confirmação</th>
-</tr>
-</thead>
-
-<tbody id="lista"></tbody>
-</table>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
 const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-let chartInstance = null;
-
-// 🔓 desbloqueio de som (obrigatório no Chrome)
-document.body.addEventListener("click", () => {
-  const sound = document.getElementById("notifSound");
-  sound.play().then(()=>{ sound.pause(); sound.currentTime = 0; });
-}, { once:true });
-
-// 🔒 login
 if(localStorage.getItem("adminLogado") !== "true"){
   window.location.href = "admin.html";
+}
+
+function mostrarTab(tab){
+  document.getElementById("respostasTab").style.display = "none";
+  document.getElementById("adminsTab").style.display = "none";
+  document.getElementById("pendentesTab").style.display = "none";
+
+  document.getElementById(tab + "Tab").style.display = "block";
 }
 
 function mostrarNotificacao(){
@@ -179,58 +134,10 @@ function mostrarNotificacao(){
   setTimeout(()=> aviso.style.display="none", 3000);
 }
 
-function atualizarEstatisticas(dados){
-  let total = dados.length;
-  let aceitaram = 0;
-  let recusaram = 0;
-
-  dados.forEach(item=>{
-    let v = (item.confirmacao ?? "").toLowerCase();
-
-    if(v.includes("aceit") || v==="sim" || v==="true"){
-      aceitaram++;
-    } else {
-      recusaram++;
-    }
-
-    function mostrarTab(tab){
-
-  document.getElementById("respostasTab").style.display = "none";
-  document.getElementById("adminsTab").style.display = "none";
-  document.getElementById("pendentesTab").style.display = "none";
-
-  document.getElementById(tab + "Tab").style.display = "block";
-    }
-  });
-
-  document.getElementById("total").innerText = total;
-  document.getElementById("aceitaram").innerText = aceitaram;
-  document.getElementById("recusaram").innerText = recusaram;
-
-  const ctx = document.getElementById("grafico");
-
-  if(chartInstance) chartInstance.destroy();
-
-  chartInstance = new Chart(ctx,{
-    type:"pie",
-    data:{
-      labels:["Aceitaram","Recusaram"],
-      datasets:[{ data:[aceitaram,recusaram] }]
-    }
-  });
-}
+/* ---------------- RESPOSTAS ---------------- */
 
 async function carregar(){
-  const { data, error } = await client.from("Respostas").select("*");
-
-  if(error){
-    console.log(error);
-    return;
-  }
-
-  if(!data) return;
-
-  atualizarEstatisticas(data);
+  const { data } = await client.from("Respostas").select("*");
 
   let html = "";
 
@@ -248,34 +155,9 @@ async function carregar(){
   document.getElementById("lista").innerHTML = html;
 }
 
-function logout(){
-  localStorage.removeItem("adminLogado");
-  window.location.href="admin.html";
-}
+/* ---------------- ADMINS ---------------- */
 
-// 🔄 realtime
-client.channel("respostas")
-.on("postgres_changes",
-{
-  event:"*",
-  schema:"public",
-  table:"Respostas"
-},
-(payload)=>{
-  carregar();
-  mostrarNotificacao();
-})
-.subscribe();
-
-function filtrarTabela(){
-  let f = document.getElementById("pesquisa").value.toLowerCase();
-  document.querySelectorAll("#lista tr").forEach(tr=>{
-    tr.style.display = tr.innerText.toLowerCase().includes(f) ? "" : "none";
-  });
-}
-
-  async function carregarAdmins(){
-
+async function carregarAdmins(){
   const { data } = await client
     .from("admin_users")
     .select("*")
@@ -288,10 +170,11 @@ function filtrarTabela(){
   });
 
   document.getElementById("listaAdmins").innerHTML = html;
-  }
+}
 
-  async function carregarPendentes(){
+/* ---------------- PENDENTES ---------------- */
 
+async function carregarPendentes(){
   const { data } = await client
     .from("admin_users")
     .select("*")
@@ -301,9 +184,8 @@ function filtrarTabela(){
 
   data.forEach(p=>{
     html += `
-      <div style="margin:10px;padding:10px;border:1px solid #ccc;">
+      <div style="padding:10px;border:1px solid #ddd;margin:10px;">
         ${p.email}
-
         <button onclick="aprovarAdmin('${p.id}')">Aprovar</button>
         <button onclick="rejeitarAdmin('${p.id}')">Rejeitar</button>
       </div>
@@ -311,31 +193,51 @@ function filtrarTabela(){
   });
 
   document.getElementById("listaPendentes").innerHTML = html;
-  }
+}
 
-  async function aprovarAdmin(id){
-  await client
-    .from("admin_users")
-    .update({ status:"approved" })
-    .eq("id", id);
+/* ---------------- AÇÕES ---------------- */
 
+async function aprovarAdmin(id){
+  await client.from("admin_users").update({status:"approved"}).eq("id",id);
   carregarAdmins();
   carregarPendentes();
 }
 
 async function rejeitarAdmin(id){
-  await client
-    .from("admin_users")
-    .delete()
-    .eq("id", id);
-
+  await client.from("admin_users").delete().eq("id",id);
   carregarPendentes();
 }
 
-carregar();
+/* ---------------- SEARCH ---------------- */
 
-  carregarAdmins();
+function filtrarTabela(){
+  let f = document.getElementById("pesquisa").value.toLowerCase();
+  document.querySelectorAll("#lista tr").forEach(tr=>{
+    tr.style.display = tr.innerText.toLowerCase().includes(f) ? "" : "none";
+  });
+}
+
+/* ---------------- REALTIME ---------------- */
+
+client.channel("respostas")
+.on("postgres_changes",
+{
+  event:"*",
+  schema:"public",
+  table:"Respostas"
+},
+()=>{
+  carregar();
+  mostrarNotificacao();
+})
+.subscribe();
+
+/* ---------------- INIT ---------------- */
+
+carregar();
+carregarAdmins();
 carregarPendentes();
+
 </script>
 
 </body>
