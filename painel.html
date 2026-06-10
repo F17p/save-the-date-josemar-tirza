@@ -158,12 +158,16 @@ function atualizarEstatisticas(dados){
   let recusaram = 0;
 
   dados.forEach(item => {
-    if(item.confirmacao === "aceitou"){
+
+    let resposta = (item.confirmacao || "").toLowerCase().trim();
+
+    if(resposta.includes("aceit")){
       aceitaram++;
     } 
-    else if(item.confirmacao === "recusou"){
+    else if(resposta.includes("recus")){
       recusaram++;
     }
+
   });
 
   document.getElementById("total").innerText = total;
