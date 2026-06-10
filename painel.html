@@ -19,6 +19,18 @@ body{
   margin-bottom:20px;
 }
 
+  .logout-btn{
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background: black;
+  color: white;
+  cursor: pointer;
+  }
+  
 table{
   width:100%;
   border-collapse:collapse;
@@ -41,7 +53,9 @@ th{
 <div class="box">
   <h2>Painel Administrativo</h2>
 
-  <button onclick="logout()">Terminar Sessão</button>
+  <button class="logout-btn" onclick="logout()">
+  Terminar Sessão
+  </button>
   
   <p>Total de respostas: <span id="total">0</span></p>
 </div>
