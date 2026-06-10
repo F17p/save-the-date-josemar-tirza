@@ -172,6 +172,8 @@ z-index:9999;
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
+  
 <script>
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
@@ -241,15 +243,16 @@ function atualizarEstatisticas(dados){
 
   function mostrarNotificacao(){
 
-  const aviso =
-    document.getElementById("notificacao");
-
+  const aviso = document.getElementById("notificacao");
   aviso.style.display = "block";
+
+  // 🔊 SOM
+  const sound = document.getElementById("notifSound");
+  sound.play();
 
   setTimeout(() => {
     aviso.style.display = "none";
   }, 4000);
-
   }
 
   document.getElementById("total").innerText = total;
@@ -264,22 +267,25 @@ async function carregar() {
  const { data, error } = await client
    .from('Respostas')
    .select('*');
-  
-  console.log(data);
+
+ console.log("DATA:", data);
+ console.log("ERROR:", error);
 
  if(error){
-   alert(error.message);
+   alert("Erro: " + error.message);
    return;
  }
 
- // 🔥 Atualiza cards
+ if(!data){
+   console.log("Sem dados recebidos");
+   return;
+ }
+
  atualizarEstatisticas(data);
 
- // 🧾 Monta tabela
  let html = '';
 
  data.forEach(item => {
-
    html += `
    <tr>
      <td>${item.nome || ''}</td>
@@ -288,7 +294,6 @@ async function carregar() {
      <td>${item.confirmacao || ''}</td>
    </tr>
    `;
-
  });
 
  document.getElementById('lista').innerHTML = html;
