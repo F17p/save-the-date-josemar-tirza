@@ -138,21 +138,21 @@ th{
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
 
-const client = supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-);
-  
+const client = supabase.createClient(supabaseUrl, supabaseKey);
+
 // 🔒 Proteção do painel
 if(localStorage.getItem("adminLogado") !== "true"){
    window.location.href = "admin.html";
 }
 
-  function atualizarEstatisticas(dados){
+// 📊 ESTATÍSTICAS
+function atualizarEstatisticas(dados){
   let total = dados.length;
   let aceitaram = 0;
   let recusaram = 0;
@@ -166,11 +166,12 @@ if(localStorage.getItem("adminLogado") !== "true"){
     }
   });
 
-  atualizarEstatisticas(data);
+  document.getElementById("total").innerText = total;
   document.getElementById("aceitaram").innerText = aceitaram;
   document.getElementById("recusaram").innerText = recusaram;
-  }
-  
+}
+
+// 📥 CARREGAR DADOS
 async function carregar() {
 
  const { data, error } = await client
@@ -182,8 +183,10 @@ async function carregar() {
    return;
  }
 
- document.getElementById('total').innerText = data.length;
+ // 🔥 Atualiza cards
+ atualizarEstatisticas(data);
 
+ // 🧾 Monta tabela
  let html = '';
 
  data.forEach(item => {
@@ -202,16 +205,17 @@ async function carregar() {
  document.getElementById('lista').innerHTML = html;
 }
 
-  function logout() {
+// 🚪 logout
+function logout() {
   localStorage.removeItem("adminLogado");
   window.location.href = "admin.html";
-  }
+}
 
-  setInterval(() => {
+// 🔄 auto refresh
+setInterval(() => {
   carregar();
-}, 10000); // 10 segundos
+}, 10000);
+
+// 🚀 primeira carga
 carregar();
 </script>
-
-</body>
-</html>
