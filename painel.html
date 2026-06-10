@@ -170,8 +170,6 @@ z-index:9999;
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
@@ -226,7 +224,11 @@ function atualizarEstatisticas(dados){
 
   const ctx = document.getElementById('grafico');
 
-  new Chart(ctx, {
+  if(chartInstance){
+    chartInstance.destroy();
+  }
+
+  chartInstance = new Chart(ctx, {
     type: 'pie',
     data: {
       labels: ['Aceitaram', 'Recusaram'],
@@ -235,7 +237,6 @@ function atualizarEstatisticas(dados){
       }]
     }
   });
-
   }
 
   function mostrarNotificacao(){
@@ -309,12 +310,15 @@ client
       schema: 'public',
       table: 'Respostas'
     },
-    () => {
+    (payload) => {
 
-  carregar();
+      console.log("Mudança recebida:", payload);
 
-  mostrarNotificacao();
+      // 🔄 atualiza dados
+      carregar();
 
+      // 🔔 notificação
+      mostrarNotificacao();
     }
   )
   .subscribe();
