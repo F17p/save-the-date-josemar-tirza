@@ -74,7 +74,11 @@ const client = supabase.createClient(
   supabaseUrl,
   supabaseKey
 );
-
+  
+if(localStorage.getItem("adminLogado") !== "true"){
+   window.location.href = "admin.html";
+}
+  
 async function carregar() {
 
  const { data, error } = await client
