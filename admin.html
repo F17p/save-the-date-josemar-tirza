@@ -74,22 +74,39 @@ async function login() {
   const email = document.getElementById('email').value;
   const senha = document.getElementById('senha').value;
 
-  const { data, error } = await client
-    .from('Admins')
-    .select('*')
-    .eq('email', email)
-    .eq('senha', senha);
+  // Login real do Supabase Auth
+  const { data: authData, error: authError } =
+    await client.auth.signInWithPassword({
+      email: email,
+      password: senha
+    });
 
-  if(error){
-    alert(error.message);
+  if(authError){
+    alert("Email ou senha incorretos");
     return;
   }
 
-  if(data.length > 0){
+  // Verificar se existe na tabela admin_users
+  const { data: admin, error: adminError } =
+    await client
+      .from("admin_users")
+      .select("*")
+      .eq("email", email)
+      .eq("status", "approved")
+      .single();
 
-    localStorage.setItem("adminLogado", "true");
+  if(adminError || !admin){
+    alert("Sem permissão de administrador");
+    await client.auth.signOut();
+    return;
+  }
 
-    window.location.href = "painel.html";
+  // Guardar role para o painel atual
+  localStorage.setItem("adminRole", admin.role);
+  localStorage.setItem("adminLogado", "true");
+
+  window.location.href = "painel.html";
+}
 
   }else{
 
