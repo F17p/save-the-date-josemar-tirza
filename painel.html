@@ -12,13 +12,6 @@ body{
   padding:20px;
 }
 
-.box{
-  background:white;
-  padding:20px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-
 .logout-btn{
   position: fixed;
   top: 20px;
@@ -144,32 +137,41 @@ th{
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
 
-const { createClient } = supabase;
-const client = createClient(supabaseUrl, supabaseKey);
+/* 🔥 FIX CRÍTICO */
+const client = supabase.createClient(supabaseUrl, supabaseKey);
 
-/* 🔐 LOGIN */
+/* LOGIN CHECK */
 async function verificarSessao() {
-  const { data } = await client.auth.getUser();
+  try {
+    const { data } = await client.auth.getUser();
+    const logadoLocal = localStorage.getItem("adminLogado") === "true";
 
-  const logadoLocal = localStorage.getItem("adminLogado") === "true";
-
-  if (!data.user || !logadoLocal) {
-    window.location.href = "admin.html";
+    if (!data.user || !logadoLocal) {
+      window.location.href = "admin.html";
+    }
+  } catch (e) {
+    console.log("Erro auth:", e);
   }
 }
 
 verificarSessao();
 
 /* ROLE */
-const currentRole = localStorage.getItem("adminRole");
+const currentRole = localStorage.getItem("adminRole") || "";
 
-if(currentRole !== "super_admin"){
-  document.getElementById("btnAdmins").style.display = "none";
-}
+window.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnAdmins");
+  if(btn && currentRole !== "super_admin"){
+    btn.style.display = "none";
+  }
+});
 
 /* LOGOUT */
 async function logout() {
-  await client.auth.signOut();
+  try {
+    await client.auth.signOut();
+  } catch(e) {}
+
   localStorage.clear();
   window.location.href = "admin.html";
 }
@@ -181,11 +183,14 @@ function mostrarTab(tab){
     return;
   }
 
-  document.getElementById("respostasTab").style.display = "none";
-  document.getElementById("adminsTab").style.display = "none";
-  document.getElementById("pendentesTab").style.display = "none";
+  const tabs = ["respostasTab","adminsTab","pendentesTab"];
+  tabs.forEach(t => {
+    const el = document.getElementById(t);
+    if(el) el.style.display = "none";
+  });
 
-  document.getElementById(tab + "Tab").style.display = "block";
+  const active = document.getElementById(tab + "Tab");
+  if(active) active.style.display = "block";
 }
 
 /* NOTIFICAÇÃO */
@@ -198,11 +203,15 @@ function mostrarNotificacao(){
   ultimaNotificacao = agora;
 
   const aviso = document.getElementById("notificacao");
+  if(!aviso) return;
+
   aviso.style.display = "block";
 
   const sound = document.getElementById("notifSound");
-  sound.currentTime = 0;
-  sound.play().catch(()=>{});
+  if(sound){
+    sound.currentTime = 0;
+    sound.play().catch(()=>{});
+  }
 
   setTimeout(()=> aviso.style.display="none", 3000);
 }
@@ -223,36 +232,46 @@ function atualizarStats(data){
     }
   });
 
-  document.getElementById("total").innerText = `📌 ${total}`;
-  document.getElementById("aceitaram").innerText = `🟢 ${aceitaram}`;
-  document.getElementById("recusaram").innerText = `🔴 ${recusaram}`;
+  const t = document.getElementById("total");
+  const a = document.getElementById("aceitaram");
+  const r = document.getElementById("recusaram");
+
+  if(t) t.innerText = total;
+  if(a) a.innerText = aceitaram;
+  if(r) r.innerText = recusaram;
 }
 
 /* RESPOSTAS */
 async function carregar(){
-  const { data } = await client
-    .from("Respostas")
-    .select("*")
-    .order("id", { ascending: false });
+  try {
+    const { data } = await client
+      .from("Respostas")
+      .select("*")
+      .order("id", { ascending: false });
 
-  if(!data) return;
+    if(!data) return;
 
-  atualizarStats(data);
+    atualizarStats(data);
 
-  let html = "";
+    let html = "";
 
-  data.forEach(item=>{
-    html += `
-      <tr>
-        <td>${item.nome ?? ""}</td>
-        <td>${item.telefone ?? ""}</td>
-        <td>${item.temParceiro ?? ""}</td>
-        <td>${item.confirmacao ?? ""}</td>
-      </tr>
-    `;
-  });
+    data.forEach(item=>{
+      html += `
+        <tr>
+          <td>${item.nome ?? ""}</td>
+          <td>${item.telefone ?? ""}</td>
+          <td>${item.temParceiro ?? ""}</td>
+          <td>${item.confirmacao ?? ""}</td>
+        </tr>
+      `;
+    });
 
-  document.getElementById("lista").innerHTML = html;
+    const lista = document.getElementById("lista");
+    if(lista) lista.innerHTML = html;
+
+  } catch(e){
+    console.log("Erro carregar:", e);
+  }
 }
 
 /* ADMINS */
@@ -268,7 +287,8 @@ async function carregarAdmins(){
     html += `<p>✔ ${a.email}</p>`;
   });
 
-  document.getElementById("listaAdmins").innerHTML = html;
+  const el = document.getElementById("listaAdmins");
+  if(el) el.innerHTML = html;
 }
 
 /* PENDENTES */
@@ -290,7 +310,8 @@ async function carregarPendentes(){
     `;
   });
 
-  document.getElementById("listaPendentes").innerHTML = html;
+  const el = document.getElementById("listaPendentes");
+  if(el) el.innerHTML = html;
 }
 
 /* ADMIN ACTIONS */
@@ -317,7 +338,10 @@ async function rejeitarAdmin(id){
 
 /* SEARCH */
 function filtrarTabela(){
-  let f = document.getElementById("pesquisa").value.toLowerCase();
+  const input = document.getElementById("pesquisa");
+  if(!input) return;
+
+  let f = input.value.toLowerCase();
 
   document.querySelectorAll("#lista tr").forEach(tr=>{
     tr.style.display = tr.innerText.toLowerCase().includes(f) ? "" : "none";
@@ -339,7 +363,7 @@ client.channel("respostas")
   timeout = setTimeout(()=>{
     carregar();
     mostrarNotificacao();
-  }, 500);
+  }, 400);
 })
 .subscribe();
 
