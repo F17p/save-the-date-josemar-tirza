@@ -202,7 +202,15 @@ function mostrarTab(tab){
 }
 
 /* ---------------- NOTIFICAÇÃO ---------------- */
+let ultimaNotificacao = 0;
+
 function mostrarNotificacao(){
+  const agora = Date.now();
+
+  // evita spam de notificações
+  if (agora - ultimaNotificacao < 3000) return;
+  ultimaNotificacao = agora;
+
   const aviso = document.getElementById("notificacao");
   aviso.style.display = "block";
 
@@ -353,6 +361,12 @@ carregar();
 carregarAdmins();
 carregarPendentes();
 
+  /* 🔄 AUTO REFRESH */
+setInterval(() => {
+  carregar();
+  carregarAdmins();
+  carregarPendentes();
+}, 15000);
 </script>
 
 </body>
