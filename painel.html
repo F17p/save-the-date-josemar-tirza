@@ -164,7 +164,7 @@ async function verificarSessao() {
 verificarSessao();
 
 /* 🔐 ROLE SYSTEM */
-const currentRole = localStorage.getItem("adminRole");
+const currentRole = localStorage.setItem("adminRole", admin.role || "admin");
 
 /* 🔥 esconder botão se não for super admin */
 if(currentRole !== "super_admin"){
