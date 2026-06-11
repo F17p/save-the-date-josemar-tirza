@@ -145,7 +145,10 @@ th{
 <script>
 const supabaseUrl = "https://oklpuxedcpsjtlswugrv.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9rbHB1eGVkY3BzanRsc3d1Z3J2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA3MzMwNDEsImV4cCI6MjA5NjMwOTA0MX0.U-9WlGsAPd5LINNXvXApxfNit3tHSmjVMTYYxcecz5s";
-const client = supabase.createClient(supabaseUrl, supabaseKey);
+
+/* FIX SUPABASE V2 */
+const { createClient } = supabase;
+const client = createClient(supabaseUrl, supabaseKey);
 
 /* 🔐 LOGIN */
 if(localStorage.getItem("adminLogado") !== "true"){
@@ -158,6 +161,21 @@ const currentRole = localStorage.getItem("adminRole");
 /* 🔥 esconder botão se não for super admin */
 if(currentRole !== "super_admin"){
   document.getElementById("btnAdmins").style.display = "none";
+}
+
+/* ---------------- LOGOUT ---------------- */
+async function logout() {
+  try {
+    await client.auth.signOut();
+
+    localStorage.removeItem("adminLogado");
+    localStorage.removeItem("adminRole");
+
+    window.location.href = "admin.html";
+
+  } catch (err) {
+    console.log("Erro logout:", err.message);
+  }
 }
 
 /* ---------------- TABS ---------------- */
@@ -241,7 +259,7 @@ async function carregarAdmins(){
 
   let html = "";
 
-  data.forEach(a=>{
+  (data || []).forEach(a=>{
     html += `<p>✔ ${a.email}</p>`;
   });
 
@@ -257,7 +275,7 @@ async function carregarPendentes(){
 
   let html = "";
 
-  data.forEach(p=>{
+  (data || []).forEach(p=>{
     html += `
       <div style="padding:10px;border:1px solid #ddd;margin:10px;">
         ${p.email}
