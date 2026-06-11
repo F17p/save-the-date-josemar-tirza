@@ -82,8 +82,8 @@ async function login() {
     });
 
   if(authError){
-    alert("Email ou senha incorretos");
-    return;
+  alert(authError.message);
+  return;
   }
 
   // Verificar se existe na tabela admin_users
