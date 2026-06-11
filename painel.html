@@ -151,9 +151,17 @@ const { createClient } = supabase;
 const client = createClient(supabaseUrl, supabaseKey);
 
 /* 🔐 LOGIN */
-if(localStorage.getItem("adminLogado") !== "true"){
-  window.location.href = "admin.html";
+async function verificarSessao() {
+  const { data } = await client.auth.getUser();
+
+  const logadoLocal = localStorage.getItem("adminLogado") === "true";
+
+  if (!data.user || !logadoLocal) {
+    window.location.href = "admin.html";
+  }
 }
+
+verificarSessao();
 
 /* 🔐 ROLE SYSTEM */
 const currentRole = localStorage.getItem("adminRole");
