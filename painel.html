@@ -83,14 +83,19 @@ th{
     <p id="total">0</p>
   </div>
 
-  <div class="card">
-    <h4>Aceitaram</h4>
-    <p id="aceitaram">0</p>
-  </div>
+  <div class="card" onclick="mostrarAceitaram()" style="cursor:pointer;">
+  <h4>Aceitaram</h4>
+  <p id="aceitaram">0</p>
+</div>
+
+<div class="card" onclick="mostrarRecusaram()" style="cursor:pointer;">
+  <h4>Recusaram</h4>
+  <p id="recusaram">0</p>
+</div>
 
   <div class="card">
-    <h4>Recusaram</h4>
-    <p id="recusaram">0</p>
+  <h4>Pessoas Presentes</h4>
+  <p id="presentes">0</p>
   </div>
 </div>
 
@@ -128,6 +133,11 @@ th{
   <h3>Pedidos pendentes</h3>
   <div id="listaPendentes"></div>
 </div>
+
+  <div id="filtroTab" style="display:none;">
+  <h3 id="tituloFiltro"></h3>
+  <div id="conteudoFiltro"></div>
+  </div>
 
 <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
@@ -183,7 +193,12 @@ function mostrarTab(tab){
     return;
   }
 
-  const tabs = ["respostasTab","adminsTab","pendentesTab"];
+  const tabs = [
+  "respostasTab",
+  "adminsTab",
+  "pendentesTab",
+  "filtroTab"
+];
   tabs.forEach(t => {
     const el = document.getElementById(t);
     if(el) el.style.display = "none";
@@ -218,29 +233,46 @@ function mostrarNotificacao(){
 
 /* STATS */
 function atualizarStats(data){
+
   let total = data.length;
   let aceitaram = 0;
   let recusaram = 0;
+  let presentes = 0;
 
   data.forEach(item=>{
-    let v = (item.confirmacao ?? "").toLowerCase();
 
-    if(v.includes("aceit") || v==="sim" || v==="true"){
+    const confirmacao =
+      (item.confirmacao ?? "").toLowerCase();
+
+    const parceiro =
+      (item.temParceiro ?? "").toLowerCase();
+
+    if(confirmacao.includes("aceitou")){
+
       aceitaram++;
-    } else {
+
+      presentes++;
+
+      if(parceiro === "sim"){
+        presentes++;
+      }
+
+    }else{
       recusaram++;
     }
+
   });
 
-  const t = document.getElementById("total");
-  const a = document.getElementById("aceitaram");
-  const r = document.getElementById("recusaram");
+  document.getElementById("total").innerText = total;
+  document.getElementById("aceitaram").innerText = aceitaram;
+  document.getElementById("recusaram").innerText = recusaram;
 
-  if(t) t.innerText = total;
-  if(a) a.innerText = aceitaram;
-  if(r) r.innerText = recusaram;
+  const p = document.getElementById("presentes");
+  if(p) p.innerText = presentes;
 }
 
+  let respostasCache = [];
+  
 /* RESPOSTAS */
 async function carregar(){
   try {
@@ -251,6 +283,8 @@ async function carregar(){
 
     if(!data) return;
 
+    respostasCache = data;
+    
     atualizarStats(data);
 
     let html = "";
@@ -348,6 +382,60 @@ function filtrarTabela(){
   });
 }
 
+function mostrarAceitaram(){
+
+  mostrarTab("filtro");
+
+  document.getElementById("tituloFiltro").innerHTML =
+    "🟢 Convidados que Aceitaram";
+
+  let html = "";
+
+  respostasCache
+    .filter(x => (x.confirmacao || "") === "Aceitou")
+    .forEach(item => {
+
+      html += `
+        <div style="background:white;padding:15px;margin-bottom:10px;border-radius:8px;">
+          <strong>Nome:</strong> ${item.nome || ""}<br>
+          <strong>Telefone:</strong> ${item.telefone || ""}<br>
+          <strong>Parceiro:</strong> ${item.temParceiro || ""}<br>
+          <strong>Nome Parceiro:</strong> ${item.nomeParceiro || "-"}<br>
+          <strong>Confirmação:</strong> ${item.confirmacao || ""}
+        </div>
+      `;
+    });
+
+  document.getElementById("conteudoFiltro").innerHTML = html;
+}
+
+function mostrarRecusaram(){
+
+  mostrarTab("filtro");
+
+  document.getElementById("tituloFiltro").innerHTML =
+    "🔴 Convidados que Recusaram";
+
+  let html = "";
+
+  respostasCache
+    .filter(x => (x.confirmacao || "") === "Recusou")
+    .forEach(item => {
+
+      html += `
+        <div style="background:white;padding:15px;margin-bottom:10px;border-radius:8px;">
+          <strong>Nome:</strong> ${item.nome || ""}<br>
+          <strong>Telefone:</strong> ${item.telefone || ""}<br>
+          <strong>Parceiro:</strong> ${item.temParceiro || ""}<br>
+          <strong>Nome Parceiro:</strong> ${item.nomeParceiro || "-"}<br>
+          <strong>Confirmação:</strong> ${item.confirmacao || ""}
+        </div>
+      `;
+    });
+
+  document.getElementById("conteudoFiltro").innerHTML = html;
+}
+  
 /* REALTIME */
 let timeout;
 
@@ -366,7 +454,7 @@ client.channel("respostas")
   }, 400);
 })
 .subscribe();
-
+  
 /* INIT */
 carregar();
 carregarAdmins();
