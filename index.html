@@ -144,8 +144,8 @@ margin-bottom:15px;
 
 <div class="box hidden" id="step3">
   <h3>Poderá participar?</h3>
-  <button onclick="enviar('Aceitou')">Aceitar</button>
-  <button onclick="enviar('Recusou')">Recusar</button>
+  <button onclick="enviar('aceitou')">Aceitar</button>
+<button onclick="enviar('recusou')">Recusar</button>
 
   <button onclick="next(2)">Voltar</button>
   
@@ -197,7 +197,7 @@ function next(step) {
 
 function parceiro(valor) {
 
-  temParceiro = valor ? "Sim" : "Não";
+  temParceiro = valor ? "sim" : "nao";
 
   const box = document.getElementById('parceiroBox');
   const campo = document.getElementById('nomeParceiro');
@@ -248,7 +248,7 @@ function enviar(resposta) {
   }
 
   // 🧠 guarda resposta
-  respostaFinal = resposta;
+  respostaFinal = resposta.toLowerCase();
 
   // 💬 mensagens finais
   if (resposta === "Aceitou") {
