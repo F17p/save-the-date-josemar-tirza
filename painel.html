@@ -109,6 +109,11 @@ margin-bottom:20px;
   <h4>Pessoas Presentes</h4>
   <p id="presentes">0</p>
   </div>
+
+  <div class="card">
+  <h4>Presentes</h4>
+  <p id="presentes">0</p>
+  </div>
 </div>
 
 <div style="margin-bottom:20px;">
@@ -247,40 +252,41 @@ function mostrarNotificacao(){
 
 /* STATS */
 function atualizarStats(data){
-
   let total = data.length;
   let aceitaram = 0;
   let recusaram = 0;
   let presentes = 0;
 
-  data.forEach(item=>{
+  data.forEach(item => {
+    let confirmacao = (item.confirmacao ?? "").toLowerCase();
+    let parceiro = (item.temParceiro ?? "").toLowerCase();
 
-    const confirmacao =
-      (item.confirmacao ?? "").toLowerCase();
+    const aceitou = confirmacao.includes("aceit");
 
-    const parceiro =
-      (item.temParceiro ?? "").toLowerCase();
-
-    if(confirmacao.includes("aceitou")){
-
+    if(aceitou){
       aceitaram++;
 
-      presentes++;
-
+      // conta pessoas (1 ou 2)
       if(parceiro === "sim"){
-        presentes++;
+        presentes += 2;
+      } else {
+        presentes += 1;
       }
 
-    }else{
+    } else {
       recusaram++;
     }
-
   });
 
-  document.getElementById("total").innerText = total;
-  document.getElementById("aceitaram").innerText = aceitaram;
-  document.getElementById("recusaram").innerText = recusaram;
+  const t = document.getElementById("total");
+  const a = document.getElementById("aceitaram");
+  const r = document.getElementById("recusaram");
 
+  if(t) t.innerText = total;
+  if(a) a.innerText = aceitaram;
+  if(r) r.innerText = recusaram;
+
+  // 🔥 NOVO CARD
   const p = document.getElementById("presentes");
   if(p) p.innerText = presentes;
 }
