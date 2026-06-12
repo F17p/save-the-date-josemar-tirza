@@ -127,7 +127,7 @@ margin-bottom:20px;
 
   <div class="card">
   <h4>Faltam</h4>
-  <p id="contadorDias">...</p>
+  <p id="contadorDias">0</p>
   </div>
 </div>
 
@@ -279,12 +279,10 @@ function atualizarStats(data){
     let confirmacao = (item.confirmacao ?? "").toLowerCase();
     let parceiro = (item.temParceiro ?? "").toLowerCase();
 
-    const aceitou = confirmacao.includes("aceit");
-
     if(confirmacao === ""){
       semResposta++;
     }
-    else if(aceitou){
+    else if(confirmacao.includes("aceit")){
 
       aceitaram++;
 
@@ -295,7 +293,9 @@ function atualizarStats(data){
       }
 
     }else{
+
       recusaram++;
+
     }
 
   });
@@ -312,21 +312,6 @@ function atualizarStats(data){
   if(p) p.innerText = presentes;
   if(s) s.innerText = semResposta;
 }
-
-  });
-
-  const t = document.getElementById("total");
-  const a = document.getElementById("aceitaram");
-  const r = document.getElementById("recusaram");
-  const p = document.getElementById("presentes");
-  const s = document.getElementById("semResposta");
-
-  if(t) t.innerText = total;
-  if(a) a.innerText = aceitaram;
-  if(r) r.innerText = recusaram;
-  if(p) p.innerText = presentes;
-  if(s) s.innerText = semResposta;
-  }
 
   // 🔥 NOVO CARD
   const p = document.getElementById("presentes");
