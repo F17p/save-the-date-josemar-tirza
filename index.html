@@ -91,6 +91,14 @@
     Josemar e Tirza
   </p>
 
+  <p id="contadorCasamento" style="
+font-size:18px;
+font-weight:bold;
+margin-top:20px;
+">
+❤️ Carregando...
+  </p>
+
   <button class="btn" onclick="next(2)">
     Continuar
   </button>
@@ -168,8 +176,26 @@ function next(step) {
 }
 
 function parceiro(valor) {
+
   temParceiro = valor ? "Sim" : "Não";
-  document.getElementById('parceiroBox').classList.toggle('hidden', !valor);
+
+  const box = document.getElementById('parceiroBox');
+  const campo = document.getElementById('nomeParceiro');
+
+  if(valor){
+
+    box.classList.remove('hidden');
+
+  }else{
+
+    box.classList.add('hidden');
+
+    if(campo){
+      campo.value = "";
+    }
+
+  }
+
 }
 
 function enviar(resposta) {
