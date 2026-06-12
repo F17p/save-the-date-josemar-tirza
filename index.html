@@ -102,12 +102,20 @@
   <input id="nome" placeholder="Nome Completo">
   <input id="telefone" placeholder="Telefone">
 
-  <p>Vai com parceiro(a)?</p>
-  <button onclick="parceiro(true)">Sim</button>
-  <button onclick="parceiro(false)">Não</button>
+  <p><strong>Vai acompanhado(a)?</strong></p>
+
+<button class="btn" onclick="parceiro(true)">
+  Sim
+</button>
+
+<button class="btn" onclick="parceiro(false)">
+  Não
+</button>
 
   <div id="parceiroBox" class="hidden">
-    <input id="nomeParceiro" placeholder="Nome do parceiro(a)">
+  <input
+    id="nomeParceiro"
+    placeholder="Nome completo do parceiro(a)">
   </div>
 
   <button class="btn" onclick="next(3)">Continuar</button>
@@ -174,6 +182,25 @@ function enviar(resposta) {
 
     return;
   }
+
+  const nome = document.getElementById('nome').value.trim();
+const telefone = document.getElementById('telefone').value.trim();
+const nomeParceiro = document.getElementById('nomeParceiro').value.trim();
+
+if(nome === ""){
+  alert("Por favor, informe o seu nome.");
+  return;
+}
+
+if(telefone === ""){
+  alert("Por favor, informe o seu telefone.");
+  return;
+}
+
+if(temParceiro === "Sim" && nomeParceiro === ""){
+  alert("Por favor, informe o nome do parceiro(a).");
+  return;
+}
 
   respostaFinal = resposta;
 
