@@ -107,6 +107,16 @@ margin-top:20px;
 
 <div class="box hidden" id="step2">
   <h3>Dados pessoais</h3>
+
+<p style="
+color:#b00020;
+font-weight:bold;
+margin-bottom:15px;
+">
+⏳ Prazo para confirmação:
+30 de Agosto de 2026
+</p>
+  
   <input id="nome" placeholder="Nome Completo">
   <input id="telefone" placeholder="Telefone">
 
@@ -240,6 +250,29 @@ if(temParceiro === "Sim" && nomeParceiro === ""){
   next(4);
 }
 
+  function atualizarContadorCasamento(){
+
+  const casamento = new Date("2026-10-02T00:00:00");
+  const hoje = new Date();
+
+  const diferenca = casamento - hoje;
+
+  const dias = Math.ceil(
+    diferenca / (1000 * 60 * 60 * 24)
+  );
+
+  const el = document.getElementById("contadorCasamento");
+
+  if(!el) return;
+
+  if(dias > 0){
+    el.innerHTML =
+      `❤️ Faltam <strong>${dias}</strong> dias para o grande dia`;
+  }else{
+    el.innerHTML = "💍 O grande dia chegou!";
+  }
+}
+  
 async function salvarNoSupabase() {
   const nome = document.getElementById('nome').value;
   const telefone = document.getElementById('telefone').value;
@@ -262,4 +295,6 @@ async function salvarNoSupabase() {
     console.log(error);
   }
 }
+
+  atualizarContadorCasamento();
 </script>
