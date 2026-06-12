@@ -77,6 +77,18 @@ th{
 
 <h2>Painel Administrativo</h2>
 
+  <button onclick="exportarPDF()" style="
+padding:10px 15px;
+background:black;
+color:white;
+border:none;
+border-radius:5px;
+cursor:pointer;
+margin-bottom:20px;
+">
+📄 Exportar PDF
+  </button>
+  
 <div class="stats">
   <div class="card">
     <h4>Total</h4>
@@ -141,6 +153,8 @@ th{
 
 <audio id="notifSound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg"></audio>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
@@ -454,6 +468,46 @@ client.channel("respostas")
   }, 400);
 })
 .subscribe();
+
+  async function exportarPDF(){
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  const { data } = await client
+    .from("Respostas")
+    .select("*")
+    .order("nome");
+
+  let y = 20;
+
+  doc.setFontSize(18);
+  doc.text("Lista de Convidados - Save The Date", 10, y);
+
+  y += 15;
+
+  data.forEach((item,index)=>{
+
+    let parceiro = item.temParceiro === "Sim"
+      ? ` | Parceiro: ${item.nomeParceiro || ""}`
+      : "";
+
+    let linha =
+      `${index+1}. ${item.nome} | ${item.telefone} | ${item.confirmacao}${parceiro}`;
+
+    doc.setFontSize(10);
+    doc.text(linha, 10, y);
+
+    y += 8;
+
+    if(y > 280){
+      doc.addPage();
+      y = 20;
+    }
+  });
+
+  doc.save("convidados-save-the-date.pdf");
+  }
   
 /* INIT */
 carregar();
