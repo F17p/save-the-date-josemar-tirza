@@ -94,9 +94,28 @@ const client = supabase.createClient(supabaseUrl, supabaseKey);
 let temParceiro = "Não";
 let respostaFinal = "";
 
+  const PRAZO_LIMITE = new Date("2026-08-30T23:59:59");
+
+function prazoExpirado() {
+  return new Date() > PRAZO_LIMITE;
+}
+
 function next(step) {
-  document.querySelectorAll('.box').forEach(b => b.classList.add('hidden'));
-  document.getElementById('step' + step).classList.remove('hidden');
+
+  if(step === 2 && prazoExpirado()){
+
+    alert(
+      "O prazo para confirmação terminou em 30 de Agosto de 2026."
+    );
+
+    return;
+  }
+
+  document.querySelectorAll('.box')
+    .forEach(b => b.classList.add('hidden'));
+
+  document.getElementById('step' + step)
+    .classList.remove('hidden');
 }
 
 function parceiro(valor) {
@@ -105,12 +124,22 @@ function parceiro(valor) {
 }
 
 function enviar(resposta) {
+
+  if(prazoExpirado()){
+
+    alert(
+      "O prazo para responder já terminou."
+    );
+
+    return;
+  }
+
   respostaFinal = resposta;
 
   document.getElementById('msg').innerText =
     resposta === "Aceitou"
-      ? "A sua intenção de participar foi registada com sucesso."
-      : "Registámos que não poderá participar desta celebração.";
+      ? "Muito obrigada por salvares a data do nosso casamento. Teremos muito gosto em tê-lo lá."
+      : "Lamentamos que não possas estar presente neste dia tão especial. Agradecemos o teu carinho e compreensão. Recebe um forte abraço dos noivos.";
 
   salvarNoSupabase();
 
