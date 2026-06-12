@@ -288,17 +288,30 @@ function atualizarStats(data){
 
       aceitaram++;
 
-      // conta o convidado + parceiro
       if(parceiro === "sim"){
         presentes += 2;
       }else{
         presentes += 1;
       }
 
-    }
-    else{
+    }else{
       recusaram++;
     }
+
+  });
+
+  const t = document.getElementById("total");
+  const a = document.getElementById("aceitaram");
+  const r = document.getElementById("recusaram");
+  const p = document.getElementById("presentes");
+  const s = document.getElementById("semResposta");
+
+  if(t) t.innerText = total;
+  if(a) a.innerText = aceitaram;
+  if(r) r.innerText = recusaram;
+  if(p) p.innerText = presentes;
+  if(s) s.innerText = semResposta;
+}
 
   });
 
