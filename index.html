@@ -137,17 +137,26 @@ margin-bottom:15px;
   </div>
 
   <button class="btn" onclick="next(3)">Continuar</button>
+
+<button onclick="next(1)">Voltar</button>
+  
 </div>
 
 <div class="box hidden" id="step3">
   <h3>Poderá participar?</h3>
   <button onclick="enviar('Aceitou')">Aceitar</button>
   <button onclick="enviar('Recusou')">Recusar</button>
+
+  <button onclick="next(2)">Voltar</button>
+  
 </div>
 
 <div class="box hidden" id="step4">
   <h2>Obrigado!</h2>
   <p id="msg"></p>
+
+<button onclick="next(3)">Voltar</button>
+  
 </div>
 
 <!-- 🔥 SUPABASE -->
@@ -169,18 +178,19 @@ function prazoExpirado() {
 
 function next(step) {
 
-  if(step === 2 && prazoExpirado()){
-
-    alert(
-      "O prazo para confirmação terminou em 30 de Agosto de 2026."
-    );
-
+  if (step === 2 && prazoExpirado()) {
+    alert("O prazo para confirmação terminou em 30 de Agosto de 2026.");
     return;
   }
 
+  // guarda onde a pessoa está
+  localStorage.setItem("etapaAtual", step);
+
+  // esconde tudo
   document.querySelectorAll('.box')
     .forEach(b => b.classList.add('hidden'));
 
+  // mostra só a etapa atual
   document.getElementById('step' + step)
     .classList.remove('hidden');
 }
@@ -210,43 +220,50 @@ function parceiro(valor) {
 
 function enviar(resposta) {
 
-  if(prazoExpirado()){
-
-    alert(
-      "O prazo para responder já terminou."
-    );
-
+  // 🔒 bloqueia se passou o prazo
+  if (prazoExpirado()) {
+    alert("O prazo para responder já terminou.");
     return;
   }
 
+  // 📌 recolha de dados
   const nome = document.getElementById('nome').value.trim();
-const telefone = document.getElementById('telefone').value.trim();
-const nomeParceiro = document.getElementById('nomeParceiro').value.trim();
+  const telefone = document.getElementById('telefone').value.trim();
+  const nomeParceiro = document.getElementById('nomeParceiro').value.trim();
 
-if(nome === ""){
-  alert("Por favor, informe o seu nome.");
-  return;
-}
+  // ❌ validações obrigatórias
+  if (nome === "") {
+    alert("Por favor, informe o seu nome completo.");
+    return;
+  }
 
-if(telefone === ""){
-  alert("Por favor, informe o seu telefone.");
-  return;
-}
+  if (telefone === "") {
+    alert("Por favor, informe o seu telefone.");
+    return;
+  }
 
-if(temParceiro === "Sim" && nomeParceiro === ""){
-  alert("Por favor, informe o nome do parceiro(a).");
-  return;
-}
+  if (temParceiro === "Sim" && nomeParceiro === "") {
+    alert("Por favor, informe o nome completo do parceiro(a).");
+    return;
+  }
 
+  // 🧠 guarda resposta
   respostaFinal = resposta;
 
-  document.getElementById('msg').innerText =
-    resposta === "Aceitou"
-      ? "Muito obrigada por salvares a data do nosso casamento. Teremos muito gosto em tê-lo lá."
-      : "Lamentamos que não possas estar presente neste dia tão especial. Agradecemos o teu carinho e compreensão. Recebe um forte abraço dos noivos.";
+  // 💬 mensagens finais
+  if (resposta === "Aceitou") {
+    document.getElementById('msg').innerText =
+      "Muito obrigada por salvares a data do nosso casamento. Teremos muito gosto em tê-lo lá.";
+  } 
+  else {
+    document.getElementById('msg').innerText =
+      "Lamentamos que não possas estar presente neste dia tão especial. Agradecemos o teu carinho e compreensão. Recebe um forte abraço dos noivos.";
+  }
 
+  // 💾 envia para Supabase
   salvarNoSupabase();
 
+  // 👉 próxima etapa
   next(4);
 }
 
@@ -295,6 +312,16 @@ async function salvarNoSupabase() {
     console.log(error);
   }
 }
+
+  window.onload = function () {
+  const etapa = localStorage.getItem("etapaAtual");
+
+  if (etapa) {
+    next(parseInt(etapa));
+  } else {
+    next(1);
+  }
+};
 
   atualizarContadorCasamento();
 </script>
