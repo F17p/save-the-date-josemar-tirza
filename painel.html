@@ -77,6 +77,16 @@ th{
 
 <h2>Painel Administrativo</h2>
 
+  <div style="
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+">
+📅 Casamento: 02 Outubro 2026<br>
+⏳ Prazo de resposta: 30 Agosto 2026
+  </div>
+
   <button onclick="exportarPDF()" style="
 padding:10px 15px;
 background:black;
@@ -108,6 +118,16 @@ margin-bottom:20px;
   <div class="card">
   <h4>Pessoas Presentes</h4>
   <p id="presentes">0</p>
+  </div>
+
+  <div class="card">
+  <h4>Sem Resposta</h4>
+  <p id="semResposta">0</p>
+  </div>
+
+  <div class="card">
+  <h4>Faltam</h4>
+  <p id="contadorDias">...</p>
   </div>
 </div>
 
@@ -247,39 +267,53 @@ function mostrarNotificacao(){
 
 /* STATS */
 function atualizarStats(data){
+
   let total = data.length;
   let aceitaram = 0;
   let recusaram = 0;
   let presentes = 0;
+  let semResposta = 0;
 
   data.forEach(item => {
+
     let confirmacao = (item.confirmacao ?? "").toLowerCase();
     let parceiro = (item.temParceiro ?? "").toLowerCase();
 
     const aceitou = confirmacao.includes("aceit");
 
-    if(aceitou){
+    if(confirmacao === ""){
+      semResposta++;
+    }
+    else if(aceitou){
+
       aceitaram++;
 
-      // conta pessoas (1 ou 2)
+      // conta o convidado + parceiro
       if(parceiro === "sim"){
         presentes += 2;
-      } else {
+      }else{
         presentes += 1;
       }
 
-    } else {
+    }
+    else{
       recusaram++;
     }
+
   });
 
   const t = document.getElementById("total");
   const a = document.getElementById("aceitaram");
   const r = document.getElementById("recusaram");
+  const p = document.getElementById("presentes");
+  const s = document.getElementById("semResposta");
 
   if(t) t.innerText = total;
   if(a) a.innerText = aceitaram;
   if(r) r.innerText = recusaram;
+  if(p) p.innerText = presentes;
+  if(s) s.innerText = semResposta;
+  }
 
   // 🔥 NOVO CARD
   const p = document.getElementById("presentes");
@@ -509,11 +543,34 @@ client.channel("respostas")
 
   doc.save("convidados-save-the-date.pdf");
   }
+
+  function atualizarContador(){
+
+  const limite = new Date("2026-08-30T23:59:59");
+  const hoje = new Date();
+
+  const diferenca = limite - hoje;
+
+  const dias = Math.ceil(
+    diferenca / (1000 * 60 * 60 * 24)
+  );
+
+  const el = document.getElementById("contadorDias");
+
+  if(!el) return;
+
+  if(dias > 0){
+    el.innerText = dias + " dias";
+  }else{
+    el.innerText = "Prazo encerrado";
+  }
+  }
   
 /* INIT */
 carregar();
 carregarAdmins();
 carregarPendentes();
+atualizarContador();
 
 </script>
 
