@@ -319,10 +319,10 @@ async function salvarNoSupabase() {
 }
 
   window.onload = function () {
-  const etapa = localStorage.getItem("etapaAtual");
+  const etapa = parseInt(localStorage.getItem("etapaAtual"));
 
-  if (etapa) {
-    next(parseInt(etapa));
+  if (etapa >= 1 && etapa <= 4) {
+    next(etapa);
   } else {
     next(1);
   }
