@@ -435,10 +435,8 @@ function mostrarAceitaram(){
 
   respostasCache
     .filter(x =>
-      (x.confirmacao || "")
-      .toLowerCase()
-      .includes("aceit")
-    )
+  (x.confirmacao || "").toLowerCase() === "aceitou"
+)
     .forEach(item => {
 
       html += `
@@ -466,10 +464,8 @@ function mostrarRecusaram(){
 
   respostasCache
     .filter(x =>
-      (x.confirmacao || "")
-      .toLowerCase()
-      .includes("recus")
-    )
+  (x.confirmacao || "").toLowerCase() === "recusou"
+)
     .forEach(item => {
 
       html += `
