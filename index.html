@@ -251,14 +251,17 @@ function enviar(resposta) {
   respostaFinal = resposta.toLowerCase();
 
   // 💬 mensagens finais
-  if (resposta === "Aceitou") {
-    document.getElementById('msg').innerText =
-      "Muito obrigada por salvares a data do nosso casamento. Teremos muito gosto em tê-lo lá.";
-  } 
-  else {
-    document.getElementById('msg').innerText =
-      "Lamentamos que não possas estar presente neste dia tão especial. Agradecemos o teu carinho e compreensão. Recebe um forte abraço dos noivos.";
-  }
+  if(resposta === "Aceitou"){
+
+  document.getElementById("msg").innerText =
+    "Muito obrigada por salvares a data do nosso casamento. Teremos muito gosto em tê-lo lá.";
+
+  }else{
+
+  document.getElementById("msg").innerText =
+    "Lamentamos que não possas estar presente neste dia tão especial. Agradecemos o teu carinho e compreensão. Recebe um forte abraço dos noivos.";
+
+}
 
   // 💾 envia para Supabase
   salvarNoSupabase();
