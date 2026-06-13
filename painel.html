@@ -434,7 +434,11 @@ function mostrarAceitaram(){
   let html = "";
 
   respostasCache
-    .filter(x => (x.confirmacao || "") === "Aceitou")
+    .filter(x =>
+      (x.confirmacao || "")
+      .toLowerCase()
+      .includes("aceit")
+    )
     .forEach(item => {
 
       html += `
@@ -461,7 +465,11 @@ function mostrarRecusaram(){
   let html = "";
 
   respostasCache
-    .filter(x => (x.confirmacao || "") === "Recusou")
+    .filter(x =>
+      (x.confirmacao || "")
+      .toLowerCase()
+      .includes("recus")
+    )
     .forEach(item => {
 
       html += `
