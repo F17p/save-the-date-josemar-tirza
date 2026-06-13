@@ -5,26 +5,33 @@
   <title>Save the Date</title>
   <style>
     body{
-  font-family: 'Segoe UI', sans-serif;
-  background: linear-gradient(
+  font-family:'Segoe UI',sans-serif;
+  background:linear-gradient(
     135deg,
     #f8f4ef,
     #efe6dc
   );
-  text-align:center;
-  padding:20px;
+
+  margin:0;
+  padding:15px;
+
+  display:flex;
+  justify-content:center;
+  align-items:center;
+
   min-height:100vh;
-}
+    }
 
 .box{
   background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(10px);
   padding:30px;
-  margin-top:40px;
   border-radius:20px;
-  max-width:500px;
-  margin-left:auto;
-  margin-right:auto;
+
+  width:95%;
+  max-width:700px;
+
+  margin:20px auto;
+
   box-shadow:
   0 10px 30px rgba(0,0,0,0.10);
 }
@@ -34,14 +41,15 @@ h1,h2,h3{
 }
 
 button{
-  padding:14px;
-  margin-top:10px;
+  padding:18px;
+  font-size:16px;
+
   width:100%;
+
   border:none;
   border-radius:12px;
+
   cursor:pointer;
-  font-size:15px;
-  transition:0.3s;
 }
 
 button:hover{
@@ -63,10 +71,12 @@ button:hover{
 
 input{
   width:100%;
-  padding:14px;
-  margin-top:10px;
+  padding:18px;
+  font-size:16px;
+
   border:1px solid #ddd;
   border-radius:12px;
+
   box-sizing:border-box;
 }
 
@@ -350,6 +360,27 @@ console.log("Resposta recebida:", resposta);
 
   // 👉 próxima etapa
   next(4);
+
+  setTimeout(() => {
+
+  document.body.innerHTML = `
+    <div style="
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      height:100vh;
+      text-align:center;
+      font-family:Arial;
+      padding:20px;
+    ">
+      <div>
+        <h2>✅ Resposta registada com sucesso</h2>
+        <p>Pode fechar esta página.</p>
+      </div>
+    </div>
+  `;
+
+}, 10000);
 }
 
   function atualizarContadorCasamento(){
