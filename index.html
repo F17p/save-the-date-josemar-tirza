@@ -220,6 +220,19 @@ function parceiro(valor) {
 
 function enviar(resposta) {
 
+const telefoneGuardado =
+localStorage.getItem("telefoneRespondido");
+
+if(
+telefoneGuardado &&
+telefoneGuardado === document.getElementById("telefone").value.trim()
+){
+  alert(
+    "Já existe uma confirmação registada para este número."
+  );
+  return;
+}
+  
 console.log("Resposta recebida:", resposta);
   
   // 🔒 bloqueia se passou o prazo
@@ -267,6 +280,11 @@ console.log("Resposta recebida:", resposta);
 
   // 💾 envia para Supabase
   salvarNoSupabase();
+
+  localStorage.setItem(
+  "telefoneRespondido",
+  telefone
+);
 
   // 👉 próxima etapa
   next(4);
