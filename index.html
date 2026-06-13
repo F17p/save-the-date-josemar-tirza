@@ -220,6 +220,8 @@ function parceiro(valor) {
 
 function enviar(resposta) {
 
+console.log("Resposta recebida:", resposta);
+  
   // 🔒 bloqueia se passou o prazo
   if (prazoExpirado()) {
     alert("O prazo para responder já terminou.");
