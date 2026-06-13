@@ -434,7 +434,7 @@ function mostrarAceitaram(){
   let html = "";
 
   respostasCache
-    .filter(x =>
+ .filter(x =>
   (x.confirmacao || "").toLowerCase() === "aceitou"
 )
     .forEach(item => {
@@ -463,7 +463,7 @@ function mostrarRecusaram(){
   let html = "";
 
   respostasCache
-    .filter(x =>
+ .filter(x =>
   (x.confirmacao || "").toLowerCase() === "recusou"
 )
     .forEach(item => {
