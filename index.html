@@ -2,6 +2,7 @@
 <html lang="pt">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Save the Date</title>
   <style>
     body{
@@ -81,6 +82,25 @@ input{
 #contadorCasamento{
   color:#8b6b4a;
 }
+
+    #contadorCasamento{
+  background:#fff7f0;
+  border:2px solid #e8d7c3;
+  padding:18px;
+  border-radius:15px;
+  margin-top:20px;
+  font-size:20px;
+  font-weight:bold;
+}
+
+h1{
+  margin-top:0;
+  font-weight:300;
+}
+
+p{
+  line-height:1.6;
+}
   </style>
 </head>
 
@@ -145,22 +165,20 @@ color:#8b6b4a;
   <br>
 
   <p>
-    <strong>Com carinho,</strong>
-    <br><br>
-    Josemar e Tirza
-  </p>
-  
-  #contadorCasamento{
-  background:#fff7f0;
-  border:2px solid #e8d7c3;
-  padding:18px;
-  border-radius:15px;
-  margin-top:20px;
-  font-size:20px;
-  font-weight:bold;
-}
-❤️ Carregando...
-  </div>
+  <strong>Com carinho,</strong>
+  <br><br>
+  Josemar e Tirza
+</p>
+
+<p id="contadorCasamento">
+  ❤️ Carregando...
+</p>
+
+<button class="btn" onclick="next(2)">
+  Continuar
+</button>
+
+</div>
 
   <button class="btn" onclick="next(2)">
     Continuar
@@ -218,17 +236,7 @@ margin-bottom:15px;
   <h2>Obrigado!</h2>
   <p id="msg"></p>
 
-<button onclick="next(3)">Voltar</button>
-
- h1{
-  margin-top:0;
-  font-weight:300;
-}
-
-p{
-  line-height:1.6;
-}
-  
+  <button onclick="next(3)">Voltar</button>
 </div>
 
 <!-- 🔥 SUPABASE -->
