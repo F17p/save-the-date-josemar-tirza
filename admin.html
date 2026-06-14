@@ -75,16 +75,14 @@ async function login() {
   const senha = document.getElementById('senha').value;
 
   // Login real do Supabase Auth
-  const { data: authData, error: authError } =
-    await client.auth.signInWithPassword({
-      email: email,
-      password: senha
-    });
+  const { data: admins, error: adminError } =
+  await client
+    .from("admin_users")
+    .select("*");
 
-  if(authError){
-  alert(authError.message);
-  return;
-  }
+alert(
+  JSON.stringify(admins)
+);
 
   // Verificar se existe na tabela admin_users
   const { data: admin, error: adminError } =
