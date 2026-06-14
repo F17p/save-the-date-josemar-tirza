@@ -93,11 +93,18 @@ alert(
       .eq("status", "approved")
       .single();
 
-  if(adminError || !admin){
-    alert("Sem permissão de administrador");
-    await client.auth.signOut();
-    return;
-  }
+  console.log("ADMIN:", admin);
+console.log("ERRO:", adminError);
+
+if(adminError || !admin){
+  alert(
+    "ERRO: " +
+    JSON.stringify(adminError)
+  );
+
+  await client.auth.signOut();
+  return;
+}
 
   // Guardar role para o painel atual
   localStorage.setItem("adminRole", admin.role);
