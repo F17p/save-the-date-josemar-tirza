@@ -74,39 +74,39 @@ async function login() {
   const email = document.getElementById('email').value;
   const senha = document.getElementById('senha').value;
 
-  // Login real do Supabase Auth
-  const { data: admins, error: adminError } =
-  await client
-    .from("admin_users")
-    .select("*");
+  // 1. LOGIN REAL SUPABASE
+  const { data: authData, error: authError } =
+    await client.auth.signInWithPassword({
+      email,
+      password: senha
+    });
 
-alert(
-  JSON.stringify(admins)
-);
+  if(authError){
+    alert("Erro login: " + authError.message);
+    return;
+  }
 
-  // Verificar se existe na tabela admin_users
+  // 2. VERIFICAR ADMIN
   const { data: admin, error: adminError } =
     await client
       .from("admin_users")
       .select("*")
       .eq("email", email)
-      .eq("status", "approved")
       .single();
 
-  console.log("ADMIN:", admin);
-console.log("ERRO:", adminError);
+  if(adminError || !admin){
+    alert("Sem registo de admin");
+    await client.auth.signOut();
+    return;
+  }
 
-if(adminError || !admin){
-  alert(
-    "ERRO: " +
-    JSON.stringify(adminError)
-  );
+  if(admin.status !== "approved"){
+    alert("Ainda não aprovado pelo super admin");
+    await client.auth.signOut();
+    return;
+  }
 
-  await client.auth.signOut();
-  return;
-}
-
-  // Guardar role para o painel atual
+  // 3. GUARDAR ROLE
   localStorage.setItem("adminRole", admin.role);
   localStorage.setItem("adminLogado", "true");
 
