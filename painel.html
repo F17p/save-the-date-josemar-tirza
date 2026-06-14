@@ -134,7 +134,12 @@ margin-bottom:20px;
 <div style="margin-bottom:20px;">
   <button onclick="mostrarTab('respostas')">Respostas</button>
   <button onclick="mostrarTab('admins')" id="btnAdmins">Admins</button>
-  <button onclick="mostrarTab('pendentes')">Pendentes</button>
+  <button onclick="
+mostrarTab('pendentes');
+carregarPendentes();
+">
+  Pendentes
+  </button>
 </div>
 
 <!-- RESPOSTAS -->
