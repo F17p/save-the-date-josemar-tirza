@@ -369,27 +369,43 @@ async function carregarAdmins(){
 
 /* PENDENTES */
 async function carregarPendentes(){
-  const { data } = await client
+
+  const { data, error } = await client
     .from("admin_users")
     .select("*")
     .eq("status","pending");
 
+  console.log("PENDENTES:", data);
+  console.log("ERRO:", error);
+
   let html = "";
 
   (data || []).forEach(p=>{
+
     html += `
-      <div style="padding:10px;border:1px solid #ddd;margin:10px;">
-        ${p.email}
-        <button onclick="aprovarAdmin('${p.id}')">Aprovar</button>
-        <button onclick="rejeitarAdmin('${p.id}')">Rejeitar</button>
+      <div style="
+      background:white;
+      padding:15px;
+      margin-bottom:10px;
+      border-radius:10px;
+      ">
+        <strong>${p.email}</strong>
+        <br><br>
+
+        <button onclick="aprovarAdmin('${p.id}')">
+          Aprovar
+        </button>
+
+        <button onclick="rejeitarAdmin('${p.id}')">
+          Rejeitar
+        </button>
       </div>
     `;
   });
 
-  const el = document.getElementById("listaPendentes");
-  if(el) el.innerHTML = html;
+  document.getElementById("listaPendentes").innerHTML = html;
 }
-
+  
 /* ADMIN ACTIONS */
 async function aprovarAdmin(id){
   if(currentRole !== "super_admin") return;
