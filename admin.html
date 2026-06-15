@@ -88,11 +88,14 @@ async function login() {
 
   // 2. VERIFICAR ADMIN
   const { data: admin, error: adminError } =
-    await client
-      .from("admin_users")
-      .select("*")
-      .eq("email", email)
-      .single();
+  await client
+    .from("admin_users")
+    .select("*")
+    .eq("email", email)
+    .maybeSingle();
+
+alert("Admin: " + JSON.stringify(admin));
+alert("Erro: " + JSON.stringify(adminError));
 
   if(adminError || !admin){
     alert("Sem registo de admin");
