@@ -91,7 +91,7 @@ async function login() {
   await client
     .from("admin_users")
     .select("*")
-    .eq("email", email)
+    .eq("email", email.trim().toLowerCase())
     .maybeSingle();
 
 alert("Admin: " + JSON.stringify(admin));
